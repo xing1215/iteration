@@ -1,0 +1,78 @@
+---
+title: "Writing Functions"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(rvest)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	fig.height = 6,
+	fig.width = 8,
+	warning = FALSE,
+	out.wideth = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+
+## Get start
+
+we are going to write some functions
+
+calculating z-scores
+
+```{r}
+x = rnorm(n = 30, mean = 4, sd = 2.3)
+x_again = rnorm(n = 30, mean = 6, sd = 0.3)
+
+(x - mean(x)) / sd(x)
+(x_again - mean(x_again)) / sd(x_again)
+```
+
+Now a function
+
+```{r}
+z_score = function(x_arg) {
+  (x_arg - mean(x_arg)) / sd(x_arg)
+}
+```
+
+Here, we receive a lot errors when using the functions. Thus, we want to add some conditions to our fucntion. 
+
+```{r}
+z_score = function(x_arg) {
+  
+  if (!is.numeric(x_arg)) {
+    stop("x should be numeric")
+  } else if (length(x_arg) == 1) {
+    stop("x should be larger than 3")
+  }
+  
+  (x_arg - mean(x_arg)) / sd(x_arg)
+  
+}
+```
+
+Try the function
+
+```{r, error=TRUE}
+z_score(x_arg = x_again)
+z_score(x_arg = 3)
+z_score(x_arg = "my name is jeff")
+z_score(x_arg = c(TRUE, TRUE, FALSE, TRUE))
+```
+
+
+
+
