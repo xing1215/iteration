@@ -83,5 +83,37 @@ z_score(x_arg = c(TRUE, TRUE, FALSE, TRUE))
 ```
 
 
+## Multiple outputs
+
+```{r}
+mean_and_sd = function(input_x) {
+  
+  if (!is.numeric(input_x)) {
+    stop("x should be numeric")
+  } else if (length(input_x) == 1) {
+    stop("x should be larger than 3")
+  }
+  
+  list(
+    mean_input = mean(input_x),
+    sd_input = sd(input_x),
+    z_score = (input_x - mean(input_x)) / sd(input_x)
+  )
+  
+}
+```
+
+test the function
+
+```{r}
+mean_and_sd(input_x = x)
+```
+
+
+## Multiple inputs
+
+
+
+
 
 
