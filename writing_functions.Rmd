@@ -23,6 +23,8 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+set.seed(1)
 ```
 
 
@@ -111,6 +113,110 @@ mean_and_sd(input_x = x)
 
 
 ## Multiple inputs
+
+```{r}
+set.seed(1)
+sim_data = tibble(
+  x = rnorm(30, mean = 1, sd = 1),
+  y = 2 + 3 * x + rnorm(30, 0, 1)
+)
+
+# check the data I created
+sim_data %>% ggplot(aes(x = x, y = y)) + geom_point()
+
+# do a linear regression analysis
+ls_fit = lm(y ~ x, data = sim_data)
+  
+beta0_hat = coef(ls_fit)[1]
+beta1_hat = coef(ls_fit)[2]
+```
+
+the chunk of the code above is kind of redundant and not tidy, let's use a function
+
+```{r}
+set.seed(50)
+
+sim_regression = function(n, beta0, beta1) {
+  sim_data = tibble(
+    x = rnorm(n, mean = 1, sd = 1),
+    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+  )
+
+  ls_fit = lm(y ~ x, data = sim_data)
+  tibble(
+    beta0_hat = coef(ls_fit)[1],
+    beta1_hat = coef(ls_fit)[2]
+  )
+}
+
+sim_regression(30, 2, 3)
+```
+
+
+## scrape the Amazon
+
+```{r}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+dynamite_html = read_html(url)
+
+review_titles = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-title") %>%
+  html_text()
+
+review_stars = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text()
+
+review_text = 
+  dynamite_html %>%
+    html_nodes(".review-text-content span") %>%
+    html_text()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+```
+
+this chunk of the code that get the information of page 1. But what if I want the info from page 2,
+page3? Now, let's use a function!
+
+```{r}
+read_page_reviews <- function(url) {
+  
+  h = read_html(url)
+  
+  review_titles = h %>%
+    html_nodes("#cm_cr-review_list .review-title") %>%
+    html_text()
+  
+  review_stars = h %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text() %>%
+    str_extract("\\d") %>%
+    as.numeric()
+  
+  review_text = h %>%
+    html_nodes(".review-data:nth-child(4)") %>%
+    html_text()
+  
+  tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
+}
+```
+
+```{r}
+read_page_reviews(url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=2")
+```
+
+
 
 
 
