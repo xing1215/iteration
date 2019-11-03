@@ -48,6 +48,15 @@ z_score = function(x_arg) {
 }
 ```
 
+Try the function
+
+```{r, error=TRUE}
+z_score(x_arg = x_again)
+z_score(x_arg = 3)
+z_score(x_arg = "my name is jeff")
+z_score(x_arg = c(TRUE, TRUE, FALSE, TRUE))
+```
+
 Here, we receive a lot errors when using the functions. Thus, we want to add some conditions to our fucntion. 
 
 ```{r}
@@ -64,7 +73,7 @@ z_score = function(x_arg) {
 }
 ```
 
-Try the function
+Try the function again
 
 ```{r, error=TRUE}
 z_score(x_arg = x_again)
