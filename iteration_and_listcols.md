@@ -136,3 +136,50 @@ output_median2 = map_dbl(df, median, .id = "input")
 # this will produce a single dataframe
 output2 = map_dfr(df, mean_and_sd, .id = "input")
 ```
+
+## Napoleon again
+
+create a function
+
+``` r
+read_page_reviews = function(url) {
+  
+  h = read_html(url)
+  
+  title = h %>%
+    html_nodes("#cm_cr-review_list .review-title") %>%
+    html_text()
+  
+  stars = h %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text() %>%
+    str_extract("\\d") %>%
+    as.numeric()
+  
+  text = h %>%
+    html_nodes(".review-data:nth-child(5)") %>%
+    html_text()
+  
+  data_frame(title, stars, text)
+}
+```
+
+this chunk of the code read the five pages of reviews on the
+URLs
+
+``` r
+url_base = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber="
+vec_urls = str_c(url_base, 1:5)
+```
+
+now apply the function to `vec_urls`
+
+``` r
+output = vector("list", length = 5)
+
+for (i in 1:5) {
+  output[[i]] = read_page_reviews(vec_urls[[i]])
+}
+
+output = map(vec_urls, read_page_reviews)
+```
